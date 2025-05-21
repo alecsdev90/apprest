@@ -1,0 +1,758 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>App Pedido Restaurante - Tema Escuro</title>
+  <style>
+    /* Reset e fonte */
+    * {
+      box-sizing: border-box;
+    }
+    body {
+      margin: 0; padding: 20px;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #121212;
+      color: #e0e0e0;
+      max-width: 900px;
+      margin-left: auto;
+      margin-right: auto;
+      user-select: none;
+    }
+    h1, h2, h3 {
+      font-weight: 600;
+      color: #fff;
+    }
+    /* Tabs */
+    .tab-btn {
+      padding: 10px 20px;
+      background-color: #1e1e1e;
+      border: none;
+      border-radius: 25px;
+      margin-right: 10px;
+      color: #bbb;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      user-select: none;
+    }
+    .tab-btn:hover {
+      background-color: #333;
+      color: #fff;
+    }
+    .tab-btn.active {
+      background: linear-gradient(135deg, #6b00b6, #440074);
+      color: white;
+      box-shadow: 0 0 12px #8e2de2;
+    }
+
+    /* Inputs */
+    input[type=text], input[type=password], select, textarea {
+      width: 100%;
+      padding: 10px 12px;
+      margin: 8px 0 16px 0;
+      border-radius: 6px;
+      border: none;
+      background-color: #222;
+      color: #eee;
+      font-size: 1em;
+      outline: none;
+      transition: background-color 0.3s ease;
+    }
+    input[type=text]:focus, input[type=password]:focus, select:focus, textarea:focus {
+      background-color: #333;
+      box-shadow: 0 0 6px #8e2de2;
+    }
+
+    /* Botões */
+    button {
+      padding: 10px 18px;
+      border-radius: 25px;
+      border: none;
+      background: linear-gradient(135deg, #6b00b6, #440074);
+      color: white;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background 0.4s ease;
+      user-select: none;
+      box-shadow: 0 4px 8px rgba(107,0,182,0.4);
+    }
+    button:hover {
+      background: linear-gradient(135deg, #8e2de2, #440074);
+      box-shadow: 0 6px 14px rgba(142,45,226,0.7);
+    }
+    button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      box-shadow: none;
+    }
+    .btn-danger {
+      background: #c0392b;
+      box-shadow: 0 4px 8px rgba(192,57,43,0.4);
+    }
+    .btn-danger:hover {
+      background: #e74c3c;
+      box-shadow: 0 6px 14px rgba(231,76,60,0.7);
+    }
+    .btn-secondary {
+      background: #444;
+      box-shadow: none;
+      color: #ccc;
+    }
+    .btn-secondary:hover {
+      background: #555;
+      color: #eee;
+    }
+
+    /* Menu Item com imagem */
+    .menu-item {
+      background-color: #1e1e1e;
+      border-radius: 10px;
+      padding: 12px;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      box-shadow: 0 1px 6px rgba(0,0,0,0.5);
+      user-select: text;
+    }
+    .menu-info {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      max-width: 70%;
+    }
+    .menu-info img {
+  display: none;
+}
+    .menu-info div {
+      font-size: 1.1em;
+      color: #ddd;
+      font-weight: 600;
+    }
+    .menu-price {
+      font-weight: 700;
+      font-size: 1.1em;
+      color: #9b59b6;
+      min-width: 90px;
+      text-align: right;
+      user-select: none;
+    }
+
+    /* Order List */
+    #orderList {
+      margin-top: 10px;
+      margin-bottom: 10px;
+    }
+    .order-item {
+      display: flex;
+      justify-content: space-between;
+      background-color: #222;
+      padding: 10px 14px;
+      border-radius: 10px;
+      margin-bottom: 8px;
+      box-shadow: 0 1px 6px rgba(0,0,0,0.6);
+      align-items: center;
+    }
+    .order-item div:first-child {
+      max-width: 65%;
+      color: #ddd;
+      font-weight: 600;
+      font-size: 1em;
+      user-select: text;
+    }
+    .order-controls {
+      display: flex;
+      gap: 8px;
+      user-select: none;
+    }
+    .order-controls button {
+      background-color: #6b00b6;
+      border-radius: 6px;
+      padding: 4px 10px;
+      font-weight: 700;
+      box-shadow: 0 2px 6px rgba(107,0,182,0.7);
+      transition: background 0.3s ease;
+    }
+    .order-controls button:hover {
+      background-color: #8e2de2;
+    }
+
+    /* Panels e modals */
+    .panel {
+      background-color: #1a1a1a;
+      border-radius: 12px;
+      padding: 15px;
+      margin-top: 15px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.6);
+      color: #ccc;
+      font-size: 0.9em;
+      user-select: text;
+    }
+    select {
+      background-color: #222;
+      color: #ddd;
+    }
+    select option {
+      background-color: #222;
+      color: #ddd;
+    }
+    /* Modal BG */
+    .modal-bg {
+      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(0,0,0,0.75);
+      display: flex; justify-content: center; align-items: center;
+      z-index: 1000;
+    }
+    .modal {
+      background-color: #222;
+      border-radius: 14px;
+      padding: 25px 30px;
+      max-width: 420px;
+      width: 90%;
+      box-shadow: 0 0 15px #8e2de2;
+      color: #ddd;
+      user-select: text;
+    }
+    .modal h3 {
+      margin-top: 0;
+      margin-bottom: 15px;
+      color: #fff;
+      font-weight: 700;
+      text-align: center;
+    }
+    .modal p {
+      white-space: pre-line;
+      font-size: 1em;
+      line-height: 1.4em;
+      margin-bottom: 20px;
+    }
+
+    /* QR Codes */
+    #qrCodesContainer {
+      margin-top: 20px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+      justify-content: center;
+    }
+    .qrCodeBox {
+      border: 1px solid #555;
+      padding: 15px 10px 15px 10px;
+      border-radius: 12px;
+      text-align: center;
+      width: 160px;
+      background-color: #1e1e1e;
+      box-shadow: 0 0 12px #6b00b6aa;
+      color: #aaa;
+      font-size: 14px;
+      user-select: text;
+    }
+    .qrCodeBox canvas {
+      margin: 10px auto 10px auto;
+      display: block;
+      filter: drop-shadow(0 0 4px #8e2de2);
+    }
+
+    /* Scrollbar para a lista de pedidos admin */
+    #adminPedidosDiv {
+      max-height: 320px;
+      overflow-y: auto;
+      padding-right: 10px;
+    }
+    #adminPedidosDiv::-webkit-scrollbar {
+      width: 8px;
+    }
+    #adminPedidosDiv::-webkit-scrollbar-track {
+      background: #121212;
+    }
+    #adminPedidosDiv::-webkit-scrollbar-thumb {
+      background: #6b00b6;
+      border-radius: 6px;
+    }
+
+    /* Outros */
+    label {
+      font-weight: 600;
+      user-select: none;
+    }
+    .flex-row {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      flex-wrap: wrap;
+      margin-bottom: 12px;
+    }
+    .flex-grow {
+      flex-grow: 1;
+    }
+    .menu-info {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    }
+
+    /* Ajuste para quando não tem imagem */
+    .menu-info.no-image {
+    justify-content: flex-start;
+    font-weight: 600;
+    font-size: 1rem;
+    color: #333;
+    }
+    
+  </style>
+</head>
+<body>
+
+<h1>🍽️Agrovillas's Bar e Bistrô</h1>
+<h3>Faça seu pedido abaixo</h3>
+
+<!-- Identificação -->
+<div class="flex-row">
+  <div style="flex: 0 0 150px;">
+    <label for="inputMesa">Número da mesa:</label>
+    <input type="text" id="inputMesa" placeholder="Sua mesa" autocomplete="off" />
+  </div>
+  <div class="flex-grow">
+    <label for="inputNome">Nome na comanda:</label>
+    <input type="text" id="inputNome" placeholder="Seu nome aqui" autocomplete="off" />
+  </div>
+</div>
+
+<!-- Busca e filtro -->
+<div class="flex-row">
+  <select id="selectFiltro" style="max-width: 160px;">
+    <option value="Todos">Todas Categorias</option>
+    <option value="Entradas">Entradas</option>
+    <option value="Pratos Principais">Pratos Principais</option>
+    <option value="Sobremesas">Sobremesas</option>
+    <option value="Bebidas">Bebidas</option>
+  </select>
+
+  <input type="text" id="inputBusca" placeholder="Buscar no cardápio..." />
+</div>
+
+<!-- Cardápio -->
+<div id="menuList"></div>
+
+<!-- Observações -->
+<label for="obsInput">Observações:</label>
+<textarea id="obsInput" rows="3" placeholder="Ex: sem cebola, pouco sal..."></textarea>
+
+<!-- Pedido -->
+<h2>Pedido Atual</h2>
+<div id="orderList">Nenhum item adicionado.</div>
+<div style="text-align:right; font-size:1.3em; font-weight: 700; color: #9b59b6;">
+  Total: R$ <span id="totalSpan">0,00</span>
+</div>
+
+<div style="margin-top: 20px; text-align:center;">
+  <button id="btnFinalizar">Finalizar Pedido</button>
+</div>
+
+<!-- Modal confirmação -->
+<div id="modalConfirm" class="modal-bg" style="display:none;">
+  <div class="modal">
+    <h3>Confirma o pedido?</h3>
+    <pre id="resumoPedido" style="background:#222; padding: 15px; border-radius: 8px;"></pre>
+    <div style="text-align:center; margin-top: 15px;">
+      <button id="confirmSend">Confirmar</button>
+      <button id="cancelSend" class="btn-secondary">Cancelar</button>
+    </div>
+  </div>
+</div>
+
+<hr style="margin: 40px 0; border-color: #333;" />
+
+<!-- Painel administrativo -->
+<h2>🔒 Painel Administrativo</h2>
+<label for="inputSenhaAdmin">Senha:</label>
+<input type="password" id="inputSenhaAdmin" placeholder="Digite a senha" autocomplete="off" />
+<button id="btnLoginAdmin" style="margin-bottom:20px;">Entrar</button>
+
+<div id="adminPanel" style="display:none;">
+  <label for="filtroStatusSelect">Filtrar por status:</label>
+  <select id="filtroStatusSelect" style="max-width: 180px; margin-bottom: 15px;">
+    <option value="Todos">Todos</option>
+    <option value="Pendente">Apenas Pendente</option>
+    <option value="Em preparo">Em preparo</option>
+    <option value="Entregue">Entregue</option>
+  </select>
+  <div id="adminPedidosDiv">Nenhum pedido carregado.</div>
+</div>
+
+<hr style="margin: 40px 0; border-color: #333;" />
+
+<h2>📱 QR Codes para as Mesas</h2>
+<div id="qrCodesContainer"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
+<script>
+  // Produtos com fotos ilustrativas (substitua URLs pelas reais)
+  const menu = [
+    {id: 1, name: "Bruschetta", category: "Entradas", price: 16.50},
+    {id: 2, name: "Salada Caesar", category: "Entradas", price: 21.00},
+    {id: 3, name: "Bife à Cavalo", category: "Pratos Principais", price: 39.90},
+    {id: 4, name: "Lasanha à Bolonhesa", category: "Pratos Principais", price: 35.00},
+    {id: 5, name: "Pudim de Leite", category: "Sobremesas", price: 14.00},
+    {id: 6, name: "Mousse de Chocolate", category: "Sobremesas", price: 16.00},
+    {id: 7, name: "Refrigerante", category: "Bebidas", price: 7.00},
+    {id: 8, name: "Suco Natural", category: "Bebidas", price: 9.00},
+  ];
+
+  // Variáveis DOM
+  const menuList = document.getElementById("menuList");
+  const inputBusca = document.getElementById("inputBusca");
+  const selectFiltro = document.getElementById("selectFiltro");
+  const orderList = document.getElementById("orderList");
+  const totalSpan = document.getElementById("totalSpan");
+  const btnFinalizar = document.getElementById("btnFinalizar");
+  const obsInput = document.getElementById("obsInput");
+  const inputMesa = document.getElementById("inputMesa");
+  const inputNome = document.getElementById("inputNome");
+
+  // Modal confirmação
+  const modalConfirm = document.getElementById("modalConfirm");
+  const resumoPedido = document.getElementById("resumoPedido");
+  const confirmSend = document.getElementById("confirmSend");
+  const cancelSend = document.getElementById("cancelSend");
+
+  // Admin
+  const inputSenhaAdmin = document.getElementById("inputSenhaAdmin");
+  const btnLoginAdmin = document.getElementById("btnLoginAdmin");
+  const adminPanel = document.getElementById("adminPanel");
+  const filtroStatusSelect = document.getElementById("filtroStatusSelect");
+  const adminPedidosDiv = document.getElementById("adminPedidosDiv");
+
+  // QR Codes
+  const qrCodesContainer = document.getElementById("qrCodesContainer");
+
+  // Estado
+  let order = {};
+  let pedidosPorMesa = {}; // estrutura: { mesa: [pedido, pedido, ...] }
+  let filtroCategoria = "Todos";
+  let filtroStatus = "Todos";
+  let adminLogado = false;
+
+  // RENDERIZAÇÃO DO MENU
+  function renderMenu() {
+  menuList.innerHTML = "";
+  const busca = inputBusca.value.toLowerCase();
+  menu.forEach(item => {
+    if (filtroCategoria !== "Todos" && item.category !== filtroCategoria) return;
+    if (busca && !item.name.toLowerCase().includes(busca)) return;
+
+    const div = document.createElement("div");
+    div.className = "menu-item";
+
+    div.innerHTML = `
+      <div class="menu-info" style="flex-direction: column; align-items: flex-start;">
+        <div style="font-size: 1.1em; font-weight: bold; color: #eee;">${item.name}</div>
+        <div class="menu-price" style="margin-top: 5px;">R$ ${item.price.toFixed(2)}</div>
+      </div>
+      <button title="Adicionar ao pedido">+</button>
+    `;
+
+    const btn = div.querySelector("button");
+    btn.onclick = () => {
+      if (!inputNome.value.trim()) {
+        alert("Informe seu nome na comanda antes de adicionar itens.");
+        inputNome.focus();
+        return;
+      }
+      if (!inputMesa.value.trim()) {
+        alert("Mesa não identificada. Escaneie o QR Code da mesa.");
+        inputMesa.focus();
+        return;
+      }
+      if (!order[item.id]) {
+        order[item.id] = { item: item, quantity: 1 };
+      } else {
+        order[item.id].quantity++;
+      }
+      renderOrder();
+    };
+
+    menuList.appendChild(div);
+  });
+}
+
+  // RENDERIZAÇÃO DO PEDIDO ATUAL
+  function renderOrder() {
+    orderList.innerHTML = "";
+    let total = 0;
+    const ids = Object.keys(order);
+    if(ids.length === 0){
+      orderList.textContent = "Nenhum item adicionado.";
+      totalSpan.textContent = "0,00";
+      return;
+    }
+    ids.forEach(id => {
+      const ord = order[id];
+      total += ord.item.price * ord.quantity;
+
+      const div = document.createElement("div");
+      div.className = "order-item";
+
+      div.innerHTML = `
+        <div>${ord.item.name} (R$${ord.item.price.toFixed(2)}) x ${ord.quantity}</div>
+        <div class="order-controls">
+          <button title="Remover um">−</button>
+          <button title="Adicionar mais">+</button>
+        </div>
+      `;
+
+      const btns = div.querySelectorAll("button");
+      btns[0].onclick = () => {
+        if(ord.quantity > 1){
+          ord.quantity--;
+        } else {
+          delete order[id];
+        }
+        renderOrder();
+      };
+      btns[1].onclick = () => {
+        ord.quantity++;
+        renderOrder();
+      };
+
+      orderList.appendChild(div);
+    });
+    totalSpan.textContent = total.toFixed(2);
+  }
+
+  // FINALIZAR PEDIDO
+  btnFinalizar.onclick = () => {
+    if(!inputMesa.value.trim()){
+      alert("Informe a mesa antes de finalizar o pedido.");
+      inputMesa.focus();
+      return;
+    }
+    if(!inputNome.value.trim()){
+      alert("Informe seu nome na comanda antes de finalizar.");
+      inputNome.focus();
+      return;
+    }
+    if(Object.keys(order).length === 0){
+      alert("Adicione ao menos um item ao pedido.");
+      return;
+    }
+    // Montar resumo para modal
+    let textoResumo = `Mesa: ${inputMesa.value}\nNome: ${inputNome.value}\n\nItens:\n`;
+    let total = 0;
+    Object.values(order).forEach(ord => {
+      textoResumo += `- ${ord.item.name} x ${ord.quantity} (R$ ${(ord.item.price * ord.quantity).toFixed(2)})\n`;
+      total += ord.item.price * ord.quantity;
+    });
+    textoResumo += `\nObservações:\n${obsInput.value.trim() || "Nenhuma."}`;
+    textoResumo += `\n\nTotal: R$ ${total.toFixed(2)}`;
+
+    resumoPedido.textContent = textoResumo;
+    modalConfirm.style.display = "flex";
+  };
+
+  // Cancelar envio
+  cancelSend.onclick = () => {
+    modalConfirm.style.display = "none";
+  };
+
+  // Confirmar envio
+  confirmSend.onclick = () => {
+    modalConfirm.style.display = "none";
+
+    // Criar objeto pedido
+    const novoPedido = {
+      id: Date.now(),
+      mesa: inputMesa.value.trim(),
+      nome: inputNome.value.trim(),
+      itens: JSON.parse(JSON.stringify(order)),
+      observacoes: obsInput.value.trim(),
+      total: Object.values(order).reduce((acc, o) => acc + o.item.price * o.quantity, 0),
+      status: "Pendente",
+      timestamp: new Date(),
+    };
+
+    // Salvar no armazenamento global
+    if(!pedidosPorMesa[novoPedido.mesa]){
+      pedidosPorMesa[novoPedido.mesa] = [];
+    }
+    pedidosPorMesa[novoPedido.mesa].push(novoPedido);
+    savePedidos();
+    alert("Pedido enviado com sucesso!");
+
+    // Resetar pedido atual
+    order = {};
+    obsInput.value = "";
+    renderOrder();
+    renderPedidosAdmin();
+  };
+
+  // SALVAR E CARREGAR PEDIDOS
+  function savePedidos(){
+    localStorage.setItem("pedidosPorMesa", JSON.stringify(pedidosPorMesa));
+  }
+  function loadPedidos(){
+    const data = localStorage.getItem("pedidosPorMesa");
+    if(data){
+      pedidosPorMesa = JSON.parse(data);
+    }
+  }
+
+  // FILTRO ADMINISTRATIVO
+  filtroStatusSelect.onchange = () => {
+    filtroStatus = filtroStatusSelect.value;
+    renderPedidosAdmin();
+  };
+
+  // LOGIN ADMINISTRATIVO
+  btnLoginAdmin.onclick = () => {
+    if(inputSenhaAdmin.value === "adm01"){
+      adminLogado = true;
+      adminPanel.style.display = "block";
+      inputSenhaAdmin.value = "";
+      inputSenhaAdmin.disabled = true;
+      btnLoginAdmin.disabled = true;
+      renderPedidosAdmin();
+    } else {
+      alert("Senha incorreta.");
+    }
+  };
+
+  // RENDERIZAR PEDIDOS ADMINISTRATIVOS
+  function renderPedidosAdmin() {
+    if(!adminLogado){
+      adminPedidosDiv.innerHTML = "Acesse com a senha para visualizar os pedidos.";
+      return;
+    }
+
+    let todosPedidos = [];
+    for(const mesa in pedidosPorMesa){
+      pedidosPorMesa[mesa].forEach(pedido => {
+        todosPedidos.push(pedido);
+      });
+    }
+
+    // Filtrar por status
+    if(filtroStatus !== "Todos") {
+      todosPedidos = todosPedidos.filter(p => p.status === filtroStatus);
+    }
+
+    if(todosPedidos.length === 0){
+      adminPedidosDiv.textContent = "Nenhum pedido encontrado.";
+      return;
+    }
+
+    // Ordenar por data (mais recente primeiro)
+    todosPedidos.sort((a,b) => b.timestamp - a.timestamp);
+
+    adminPedidosDiv.innerHTML = "";
+    todosPedidos.forEach(pedido => {
+      const div = document.createElement("div");
+      div.className = "panel";
+
+      const dataHora = pedido.timestamp ? new Date(pedido.timestamp).toLocaleString() : "-";
+      const statusColor = pedido.status === "Entregue" ? "#27ae60" : pedido.status === "Em preparo" ? "#f39c12" : "#e67e22";
+
+      div.innerHTML = `
+        <strong>Mesa:</strong> ${pedido.mesa} | <strong>Nome:</strong> ${pedido.nome}<br/>
+        <strong>Data:</strong> ${dataHora}<br/>
+        <strong>Status:</strong> <span style="color:${statusColor}; font-weight: 700;">${pedido.status}</span><br/>
+        <strong>Itens:</strong>
+        <ul style="padding-left: 20px; margin-top: 6px; margin-bottom: 6px;">
+          ${Object.values(pedido.itens).map(i => `<li>${i.item.name} x ${i.quantity} (R$ ${(i.item.price * i.quantity).toFixed(2)})</li>`).join("")}
+        </ul>
+        <strong>Observações:</strong> ${pedido.observacoes || "Nenhuma."}<br/>
+        <strong>Total:</strong> R$ ${pedido.total.toFixed(2)}<br/>
+        <div style="margin-top: 10px; display: flex; gap: 10px; flex-wrap: wrap;">
+          <button class="btn-secondary" data-id="${pedido.id}" data-action="preparo">Em preparo</button>
+          <button class="btn-secondary" data-id="${pedido.id}" data-action="entregue">Entregue</button>
+          <button class="btn-danger" data-id="${pedido.id}" data-action="excluir">Excluir</button>
+        </div>
+      `;
+
+      adminPedidosDiv.appendChild(div);
+    });
+
+    // Eventos dos botões do painel
+    adminPedidosDiv.querySelectorAll("button").forEach(btn => {
+      btn.onclick = () => {
+        const pedidoId = Number(btn.dataset.id);
+        const action = btn.dataset.action;
+        let found = false;
+
+        for(const mesa in pedidosPorMesa){
+          const idx = pedidosPorMesa[mesa].findIndex(p => p.id === pedidoId);
+          if(idx >= 0){
+            found = true;
+            if(action === "excluir"){
+              if(confirm("Tem certeza que deseja excluir este pedido?")){
+                pedidosPorMesa[mesa].splice(idx, 1);
+                if(pedidosPorMesa[mesa].length === 0){
+                  delete pedidosPorMesa[mesa];
+                }
+                savePedidos();
+                renderPedidosAdmin();
+                alert("Pedido excluído.");
+              }
+            } else if(action === "preparo"){
+              pedidosPorMesa[mesa][idx].status = "Em preparo";
+              savePedidos();
+              renderPedidosAdmin();
+            } else if(action === "entregue"){
+              pedidosPorMesa[mesa][idx].status = "Entregue";
+              savePedidos();
+              renderPedidosAdmin();
+            }
+            break;
+          }
+        }
+        if(!found){
+          alert("Pedido não encontrado.");
+          renderPedidosAdmin();
+        }
+      };
+    });
+  }
+
+  // QR Codes para Mesas
+  function gerarQRCodes() {
+    const numMesas = 10;
+    for(let i=1; i<=numMesas; i++) {
+      const div = document.createElement("div");
+      div.className = "qrCodeBox";
+      div.innerHTML = `<div><strong>Mesa ${i}</strong></div><div id="qrMesa${i}"></div>`;
+      qrCodesContainer.appendChild(div);
+
+      // URL do app com query param para mesa
+      const urlMesa = `${location.origin}${location.pathname}?mesa=${i}`;
+      QRCode.toCanvas(document.getElementById(`qrMesa${i}`), urlMesa, {width: 130, color: {dark: '#6b00b6', light: '#121212'}});
+    }
+  }
+
+  // Capturar query string para identificar mesa automaticamente
+  function verificarMesaQuery() {
+    const params = new URLSearchParams(location.search);
+    const mesa = params.get("mesa");
+    if(mesa){
+      inputMesa.value = mesa;
+    }
+  }
+
+  // Eventos e inicialização
+  inputBusca.oninput = renderMenu;
+  selectFiltro.onchange = () => {
+    filtroCategoria = selectFiltro.value;
+    renderMenu();
+  };
+
+  // Inicialização
+  loadPedidos();
+  renderMenu();
+  renderOrder();
+  gerarQRCodes();
+  verificarMesaQuery();
+
+</script>
+
+</body>
+</html>
