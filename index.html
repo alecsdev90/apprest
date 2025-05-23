@@ -353,10 +353,12 @@
 <div class="flex-row">
   <div id="categoriaScroll" class="categoria-scroll">
     <button class="tab-btn active" data-cat="Todos">Todas</button>
-    <button class="tab-btn" data-cat="Entradas">Entradas</button>
-    <button class="tab-btn" data-cat="Pratos Principais">Pratos Principais</button>
+    <button class="tab-btn" data-cat="Porções">Porções</button>
+    <button class="tab-btn" data-cat="Hambúrgueres">Hambúrgueres</button>
+    <button class="tab-btn" data-cat="Pizzas">Pizzas</button>
     <button class="tab-btn" data-cat="Sobremesas">Sobremesas</button>
     <button class="tab-btn" data-cat="Bebidas">Bebidas</button>
+    <button class="tab-btn" data-cat="Drinks">Drinks</button>
   </div>
 </div>
 
@@ -368,7 +370,7 @@
 
 <!-- Observações -->
 <label for="obsInput">Observações:</label>
-<textarea id="obsInput" rows="3" placeholder="Ex: sem cebola, pouco sal..."></textarea>
+<textarea id="obsInput" rows="3" placeholder="Ex: sem cebola, ponto da carne..."></textarea>
 
 <!-- Pedido -->
 <h2>Pedido Atual</h2>
@@ -415,14 +417,26 @@
 <script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
 <script>
   const menu = [
-    {id: 1, name: "Bruschetta", category: "Entradas", price: 16.50},
-    {id: 2, name: "Salada Caesar", category: "Entradas", price: 21.00},
-    {id: 3, name: "Bife à Cavalo", category: "Pratos Principais", price: 39.90},
-    {id: 4, name: "Lasanha à Bolonhesa", category: "Pratos Principais", price: 35.00},
-    {id: 5, name: "Pudim de Leite", category: "Sobremesas", price: 14.00},
-    {id: 6, name: "Mousse de Chocolate", category: "Sobremesas", price: 16.00},
-    {id: 7, name: "Refrigerante", category: "Bebidas", price: 7.00},
-    {id: 8, name: "Suco Natural", category: "Bebidas", price: 9.00},
+    {id: 1, name: "Batata Frita", category: "Porções", price: 16.50},
+    {id: 2, name: "Anéis de Cebola", category: "Porções", price: 21.00},
+    {id: 3, name: "Filé de Tilápia", category: "Porções", price: 39.90},
+    {id: 4, name: "Nuggets", category: "Porções", price: 35.00},
+    {id: 5, name: "X-Bacon", category: "Hambúrgueres", price: 18.00},
+    {id: 6, name: "X-Salada", category: "Hambúrgueres", price: 16.00},
+    {id: 7, name: "X-Tudo", category: "Hambúrgueres", price: 27.00},
+    {id: 8, name: "Animal", category: "Hambúrgueres", price: 32.00},
+    {id: 9, name: "Fome Zero", category: "Hambúrgueres", price: 35.00},
+    {id: 10, name: "Brutus", category: "Hambúrgueres", price: 39.00},
+    {id: 11, name: "Mussarela", category: "Pizzas", price: 49.00},
+    {id: 12, name: "Calabresa", category: "Pizzas", price: 49.00},
+    {id: 13, name: "Toscana", category: "Pizzas", price: 49.00},
+    {id: 14, name: "Petit Gateau", category: "Sobremesas", price: 22.00},
+    {id: 15, name: "Sorvete", category: "Sobremesas", price: 16.00},
+    {id: 16, name: "Coca Cola Lata", category: "Bebidas", price: 7.00},
+    {id: 17, name: "Guaraná Lata", category: "Bebidas", price: 7.00},
+    {id: 18, name: "Heineken", category: "Bebidas", price: 12.00},
+    {id: 19, name: "Espanhola", category: "Drinks", price: 19.00},
+    {id: 20, name: "Caipirinha", category: "Drinks", price: 18.00},
   ];
 
   // Variáveis DOM
@@ -450,7 +464,7 @@
   const adminPedidosDiv = document.getElementById("adminPedidosDiv");
 
   // QR Codes
-  const qrCodesContainer = document.getElementById("qrCodesContainer");
+  //const qrCodesContainer = document.getElementById("qrCodesContainer");
 
   // Estado
   let order = {};
@@ -486,7 +500,7 @@
         return;
       }
       if (!inputMesa.value.trim()) {
-        alert("Mesa não identificada. Escaneie o QR Code da mesa.");
+        alert("Mesa não identificada! Informe o número da mesa.");
         inputMesa.focus();
         return;
       }
