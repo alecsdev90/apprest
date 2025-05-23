@@ -4,6 +4,9 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>App Pedido Restaurante - Tema Escuro</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400..700&display=swap" rel="stylesheet">
   <style>
     /* Reset e fonte */
     * {
@@ -287,24 +290,51 @@
       flex-grow: 1;
     }
     .menu-info {
-    display: flex;
-    align-items: center;
-    gap: 10px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
     }
 
     /* Ajuste para quando não tem imagem */
     .menu-info.no-image {
-    justify-content: flex-start;
-    font-weight: 600;
-    font-size: 1rem;
-    color: #333;
+      justify-content: flex-start;
+      font-weight: 600;
+      font-size: 1rem;
+      color: #333;
     }
-    
+
+    .nomedorest{
+      margin: 40px;
+      font-family: "Dancing Script", cursive;
+      font-size: 2.5em;
+    }
+    .categoria-scroll {
+      display: flex;
+      overflow-x: auto;
+      padding-bottom: 6px;
+      gap: 0; /* REMOVE o espaço entre botões */
+      margin-bottom: 10px;
+      scrollbar-width: none;
+    }
+    .categoria-scroll::-webkit-scrollbar {
+      display: none; 
+    }
+    .categoria-scroll .tab-btn {
+      flex: 0 0 auto;
+      white-space: nowrap;
+      margin-right: 1px; /* opcional: espaço mínimo */
+      border-radius: 0; /* deixa botões retinhos lado a lado */
+      border-left: 1px solid #333; /* separador visual leve */
+    }
+    .categoria-scroll .tab-btn:first-child {
+      border-left: none;
+    }
+
   </style>
 </head>
 <body>
 
-<h1>🍽️Agrovillas's Bar e Bistrô</h1>
+<h1 class="nomedorest">Agrovilla's Bistrô</h1>
 <h3>Faça seu pedido abaixo</h3>
 
 <!-- Identificação -->
@@ -321,13 +351,14 @@
 
 <!-- Busca e filtro -->
 <div class="flex-row">
-  <select id="selectFiltro" style="max-width: 160px;">
-    <option value="Todos">Todas Categorias</option>
-    <option value="Entradas">Entradas</option>
-    <option value="Pratos Principais">Pratos Principais</option>
-    <option value="Sobremesas">Sobremesas</option>
-    <option value="Bebidas">Bebidas</option>
-  </select>
+  <div id="categoriaScroll" class="categoria-scroll">
+    <button class="tab-btn active" data-cat="Todos">Todas</button>
+    <button class="tab-btn" data-cat="Entradas">Entradas</button>
+    <button class="tab-btn" data-cat="Pratos Principais">Pratos Principais</button>
+    <button class="tab-btn" data-cat="Sobremesas">Sobremesas</button>
+    <button class="tab-btn" data-cat="Bebidas">Bebidas</button>
+  </div>
+</div>
 
   <input type="text" id="inputBusca" placeholder="Buscar no cardápio..." />
 </div>
@@ -381,14 +412,8 @@
   <div id="adminPedidosDiv">Nenhum pedido carregado.</div>
 </div>
 
-<hr style="margin: 40px 0; border-color: #333;" />
-
-<h2>📱 QR Codes para as Mesas</h2>
-<div id="qrCodesContainer"></div>
-
 <script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
 <script>
-  // Produtos com fotos ilustrativas (substitua URLs pelas reais)
   const menu = [
     {id: 1, name: "Bruschetta", category: "Entradas", price: 16.50},
     {id: 2, name: "Salada Caesar", category: "Entradas", price: 21.00},
@@ -714,21 +739,6 @@
     });
   }
 
-  // QR Codes para Mesas
-  function gerarQRCodes() {
-    const numMesas = 10;
-    for(let i=1; i<=numMesas; i++) {
-      const div = document.createElement("div");
-      div.className = "qrCodeBox";
-      div.innerHTML = `<div><strong>Mesa ${i}</strong></div><div id="qrMesa${i}"></div>`;
-      qrCodesContainer.appendChild(div);
-
-      // URL do app com query param para mesa
-      const urlMesa = `${location.origin}${location.pathname}?mesa=${i}`;
-      QRCode.toCanvas(document.getElementById(`qrMesa${i}`), urlMesa, {width: 130, color: {dark: '#6b00b6', light: '#121212'}});
-    }
-  }
-
   // Capturar query string para identificar mesa automaticamente
   function verificarMesaQuery() {
     const params = new URLSearchParams(location.search);
@@ -740,16 +750,21 @@
 
   // Eventos e inicialização
   inputBusca.oninput = renderMenu;
-  selectFiltro.onchange = () => {
-    filtroCategoria = selectFiltro.value;
+  document.querySelectorAll("#categoriaScroll .tab-btn").forEach(btn => {
+  btn.onclick = () => {
+    document.querySelectorAll("#categoriaScroll .tab-btn").forEach(b => b.classList.remove("active"));
+    btn.classList.add("active");
+    filtroCategoria = btn.dataset.cat;
     renderMenu();
   };
+});
+
+
 
   // Inicialização
   loadPedidos();
   renderMenu();
   renderOrder();
-  gerarQRCodes();
   verificarMesaQuery();
 
 </script>
